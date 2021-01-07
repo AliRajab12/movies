@@ -1,0 +1,80 @@
+@extends('layouts.main')
+
+@section('content')
+<div class="container mx-auto px-4 py-16">
+   <div class="popualr-actors">
+    <h2 class="uppercase tracking-wider text-orange-500 text-lg font-semibold">Popular Actors</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+        @foreach ($popularActors as $actor)
+        {{-- <x-movie-card:movie="$movie" :genres="$genres" /> --}}
+            <div class="actor mt-8">
+                <a href="{{route('actors.show',$actor->id)}}">
+                @if ($actor->profile_path)
+                <img src="{{'https://image.tmdb.org/t/p/w235_and_h235_face/'.$actor->profile_path}}"
+                alt="profile Iimae" class="hover:opacity-75 transition
+                    ease-in-out duration-150">
+                @else 
+                <img src="{{'https://ui-avatars.com/api/?size=235&name='.$actor->name}}"
+                alt="poster" class="hover:opacity-75 transition
+                    ease-in-out duration-150">
+                @endif
+                </a> 
+                <div class="mt-2">
+                    <a href="{{route('actors.show',$actor->id)}}" class="text-lg mt-2 hover:text-gray:300">{{$actor->name}}</a>  
+                    <div>
+                        @foreach ($actor->known_for as $know)
+                        @if ($know->media_type == "movie")
+                            {{ $know->title }}@if (!$loop->last),
+                            @endif
+                            @elseif($know->media_type == "tv" )
+                            {{ $know->name }}@if (!$loop->last),
+                            @endif
+                            @endif
+                        @endforeach
+                    </div>
+                    {{-- <div class="text-gray-400 text-sm">
+                        @foreach ($movie->genre_ids as $genre)
+                            {{ $genres->get($genre)  }}@if (!$loop->last),
+                                
+                            @endif
+                        @endforeach
+                    </div> --}}
+                </div>       
+            </div>  
+        @endforeach     
+    </div>       
+</div> 
+<div class="page-load-status my-8">
+    <div class="flex justify-center">
+         <p class="infinite-scroll-request spinner my-8 text-4xl">&nbsp;</p>
+    </div>
+    <p class="infinite-scroll-last">End of content</p>
+    <p class="infinite-scroll-error">Error</p>
+</div>
+{{-- <div class="flex justify-between mt-16">
+    @if($previous)
+    <a href="/actors/page/{{$previous}}">Previous</a>
+    @else
+    <div></div>
+    @endif
+    @if($next)
+    <a href="/actors/page/{{$next}}">Next</a>
+    @else
+    <div></div>
+    @endif
+</div> --}}
+</div>
+
+@endsection
+@section('scripts')
+<script src="https://unpkg.com/infinite-scroll@3/dist/infinite-scroll.pkgd.min.js"></script>
+<script>
+var elem = document.querySelector('.grid');
+var infScroll= new InfiniteScroll(elem,{
+    path: '/actors/page/@{{#}}',
+    append: '.actor',
+    status : '.page-load-status',
+    // history: false,
+});
+</script>
+@endsection
